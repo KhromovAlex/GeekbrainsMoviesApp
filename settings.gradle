@@ -1,0 +1,2 @@
+rootProject.name = "GeekbrainsMoviesApp"
+include ':app'
