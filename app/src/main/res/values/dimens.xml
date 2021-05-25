@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="marginHorizontalMovieItem">16dp</dimen>
+    <dimen name="marginVerticalMovieItem">4dp</dimen>
+    <dimen name="paddingMovieItem">16dp</dimen>
+</resources>
