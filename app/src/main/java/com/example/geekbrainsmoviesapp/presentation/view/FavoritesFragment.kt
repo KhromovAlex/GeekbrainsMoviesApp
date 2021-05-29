@@ -11,10 +11,10 @@ import com.example.geekbrainsmoviesapp.databinding.FragmentFavoritesBinding
 import com.example.geekbrainsmoviesapp.model.AppState
 import com.example.geekbrainsmoviesapp.model.Movie
 import com.example.geekbrainsmoviesapp.model.MoviesFilter
-import com.example.geekbrainsmoviesapp.presentation.adapter.FavoritesAdapter
+import com.example.geekbrainsmoviesapp.presentation.adapter.MoviesListAdapter
 import com.example.geekbrainsmoviesapp.presentation.viewmodel.MoviesListViewModel
 
-class FavoritesFragment : Fragment(), FavoritesAdapter.OnTapMovie {
+class FavoritesFragment : Fragment(), MoviesListAdapter.OnTapMovie {
     private lateinit var viewModel: MoviesListViewModel
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
@@ -31,7 +31,7 @@ class FavoritesFragment : Fragment(), FavoritesAdapter.OnTapMovie {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProvider(requireActivity()).get(MoviesListViewModel::class.java)
-        val adapter = FavoritesAdapter(this)
+        val adapter = MoviesListAdapter(this)
         binding.listContainer.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.listContainer.adapter = adapter
