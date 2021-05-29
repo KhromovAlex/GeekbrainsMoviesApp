@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">GeekbrainsMoviesApp</string>
+    <string name="movies_list">Movies List</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="movies_favorites">Movies Favorites</string>
+    <string name="movies_ratings">Movies Ratings</string>
+    <string name="home">Home</string>
+    <string name="favorites">Favorites</string>
+    <string name="rating">Rating</string>
+    <string name="success">success</string>
+    <string name="error">error</string>
 </resources>
