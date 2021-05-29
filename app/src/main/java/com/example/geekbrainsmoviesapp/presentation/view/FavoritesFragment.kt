@@ -6,18 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.geekbrainsmoviesapp.R
 import com.example.geekbrainsmoviesapp.databinding.FragmentFavoritesBinding
 import com.example.geekbrainsmoviesapp.model.AppState
 import com.example.geekbrainsmoviesapp.model.Movie
 import com.example.geekbrainsmoviesapp.model.MoviesFilter
-import com.example.geekbrainsmoviesapp.presentation.adapter.FavoritesAdapter
+import com.example.geekbrainsmoviesapp.presentation.adapter.MoviesListAdapter
 import com.example.geekbrainsmoviesapp.presentation.viewmodel.MoviesListViewModel
 
-class FavoritesFragment : Fragment(), FavoritesAdapter.OnTapMovie {
+class FavoritesFragment : Fragment(), MoviesListAdapter.OnTapMovie {
     private lateinit var viewModel: MoviesListViewModel
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
+    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,8 +34,9 @@ class FavoritesFragment : Fragment(), FavoritesAdapter.OnTapMovie {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = Navigation.findNavController(view)
         viewModel = ViewModelProvider(requireActivity()).get(MoviesListViewModel::class.java)
-        val adapter = FavoritesAdapter(this)
+        val adapter = MoviesListAdapter(this)
         binding.listContainer.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.listContainer.adapter = adapter
@@ -40,7 +45,7 @@ class FavoritesFragment : Fragment(), FavoritesAdapter.OnTapMovie {
             viewModel.getMovies(MoviesFilter.Favorites)
         }
 
-        viewModel.getLiveData().observe(viewLifecycleOwner) {
+        viewModel.getLiveDataAppState().observe(viewLifecycleOwner) {
             when (it) {
                 is AppState.Error<List<Movie>> -> {
                     binding.errorState.visibility = View.VISIBLE
@@ -68,6 +73,8 @@ class FavoritesFragment : Fragment(), FavoritesAdapter.OnTapMovie {
     }
 
     override fun openMovieCard(movie: Movie) {
+        viewModel.setMovieOpen(movie)
+        navController.navigate(R.id.nav_details_movie)
     }
 
 }

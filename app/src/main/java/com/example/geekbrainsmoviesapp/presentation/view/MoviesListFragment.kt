@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.geekbrainsmoviesapp.R
 import com.example.geekbrainsmoviesapp.databinding.MoviesListFragmentBinding
 import com.example.geekbrainsmoviesapp.model.AppState
 import com.example.geekbrainsmoviesapp.model.Movie
@@ -19,6 +22,7 @@ class MoviesListFragment : Fragment(), MoviesListAdapter.OnTapMovie {
     private lateinit var viewModel: MoviesListViewModel
     private var _binding: MoviesListFragmentBinding? = null
     private val binding get() = _binding!!
+    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +35,7 @@ class MoviesListFragment : Fragment(), MoviesListAdapter.OnTapMovie {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = Navigation.findNavController(view)
         viewModel = ViewModelProvider(requireActivity()).get(MoviesListViewModel::class.java)
         val adapter = MoviesListAdapter(this)
         binding.listContainer.layoutManager =
@@ -41,7 +46,7 @@ class MoviesListFragment : Fragment(), MoviesListAdapter.OnTapMovie {
             viewModel.getMovies(MoviesFilter.All)
         }
 
-        viewModel.getLiveData().observe(viewLifecycleOwner) {
+        viewModel.getLiveDataAppState().observe(viewLifecycleOwner) {
             when (it) {
                 is AppState.Error<List<Movie>> -> {
                     binding.errorState.visibility = View.VISIBLE
@@ -69,6 +74,8 @@ class MoviesListFragment : Fragment(), MoviesListAdapter.OnTapMovie {
     }
 
     override fun openMovieCard(movie: Movie) {
+        viewModel.setMovieOpen(movie)
+        navController.navigate(R.id.nav_details_movie)
     }
 
 }

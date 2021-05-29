@@ -3,7 +3,9 @@ package com.example.geekbrainsmoviesapp.presentation.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.geekbrainsmoviesapp.R
@@ -43,18 +45,35 @@ class MoviesListAdapter(var onTap: OnTapMovie?) :
     }
 
     inner class MoviesListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private var imageView: ImageView
+
         init {
             itemView.setOnClickListener {
                 onTap?.openMovieCard(list[adapterPosition])
             }
+            imageView = itemView.findViewById(R.id.image_poster)
         }
+
         fun bind(movie: Movie) {
             itemView.findViewById<TextView>(R.id.title).text = movie.title
             itemView.findViewById<TextView>(R.id.overview).text = movie.overview
+
+            if (movie.posterPath == "") {
+                imageView.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        itemView.context,
+                        R.drawable.ic_baseline_close_24
+                    )
+                )
+                imageView.setBackgroundResource(R.color.gray)
+            }
         }
     }
 
-    inner class MoviesListDiffUtilCallback(private val list: List<Movie>, private val toAdd: List<Movie>) :
+    inner class MoviesListDiffUtilCallback(
+        private val list: List<Movie>,
+        private val toAdd: List<Movie>
+    ) :
         DiffUtil.Callback() {
         override fun getOldListSize(): Int = list.size
 
