@@ -2,6 +2,7 @@ package com.example.geekbrainsmoviesapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
@@ -43,6 +44,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> false
             }
+        }
+
+        navController.addOnDestinationChangedListener { _, _, arguments ->
+            binding.bottomNav.isVisible = arguments?.getBoolean("ShowBottomNav", true) == true
         }
     }
 
