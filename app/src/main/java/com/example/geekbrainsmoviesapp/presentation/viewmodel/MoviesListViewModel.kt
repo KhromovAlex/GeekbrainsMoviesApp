@@ -3,12 +3,10 @@ package com.example.geekbrainsmoviesapp.presentation.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.geekbrainsmoviesapp.model.AppState
-import com.example.geekbrainsmoviesapp.model.Genre
 import com.example.geekbrainsmoviesapp.model.Movie
 import com.example.geekbrainsmoviesapp.model.MoviesFilter
 import com.example.geekbrainsmoviesapp.repository.MoviesRepository
 import com.example.geekbrainsmoviesapp.repository.MoviesRepositoryImpl
-import java.util.*
 
 class MoviesListViewModel : ViewModel() {
     private val moviesRepository: MoviesRepository = MoviesRepositoryImpl()
