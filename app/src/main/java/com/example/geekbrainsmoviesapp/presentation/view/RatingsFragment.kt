@@ -42,7 +42,7 @@ class RatingsFragment : Fragment() {
         navController = Navigation.findNavController(view)
 
         val moviesListAdapter = MoviesListAdapter {
-            viewModel.setMovieOpen(it)
+            viewModel.setIdMovieOpen(it.id)
             navController.navigate(R.id.nav_details_movie)
         }
 
@@ -63,7 +63,7 @@ class RatingsFragment : Fragment() {
                         errorState.show()
                         loadState.hide()
                         successState.hide()
-                        errorState.showSnack(R.string.error)
+                        errorState.showSnack(it.error.toString())
                     }
                     is AppState.Loading<List<Movie>> -> {
                         errorState.hide()

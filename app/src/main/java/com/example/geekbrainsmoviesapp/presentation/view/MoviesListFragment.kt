@@ -1,6 +1,7 @@
 package com.example.geekbrainsmoviesapp.presentation.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,7 +44,7 @@ class MoviesListFragment : Fragment() {
         navController = Navigation.findNavController(view)
 
         val moviesListAdapter = MoviesListAdapter {
-            viewModel.setMovieOpen(it)
+            viewModel.setIdMovieOpen(it.id)
             navController.navigate(R.id.nav_details_movie)
         }
 
@@ -64,7 +65,7 @@ class MoviesListFragment : Fragment() {
                         errorState.show()
                         loadState.hide()
                         successState.hide()
-                        errorState.showSnack(R.string.error)
+                        errorState.showSnack(it.error.toString())
                     }
                     is AppState.Loading<List<Movie>> -> {
                         errorState.hide()

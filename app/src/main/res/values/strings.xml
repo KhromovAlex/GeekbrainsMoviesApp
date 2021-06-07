@@ -16,5 +16,5 @@
     <string name="placeholder_vote_count">(%1$d)</string>
     <string name="placeholder_budget">Budget: %1$d $</string>
     <string name="placeholder_revenue">Revenue: %1$d $</string>
-    <string name="placeholder_release_date">Release date: (%1$s)</string>
+    <string name="placeholder_release_date">Release date: %1$s</string>
 </resources>

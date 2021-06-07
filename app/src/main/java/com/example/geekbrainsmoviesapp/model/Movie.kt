@@ -1,19 +1,16 @@
 package com.example.geekbrainsmoviesapp.model
 
-import java.util.*
+import com.google.gson.annotations.SerializedName
 
 data class Movie(
+    @SerializedName("id")
     var id: Int,
-    var originalLanguage: String,
+    @SerializedName("original_title")
     var originalTitle: String,
+    @SerializedName("title")
     var title: String,
+    @SerializedName("overview")
     var overview: String,
-    var posterPath: String,
-    var releaseDate: Date,
-    var voteAverage: Double,
-    var voteCount: Int,
-    var genres: List<Genre>,
-    var budget: Int,
-    var revenue: Int,
-    var runtime: Int,
+    @SerializedName("poster_path")
+    var posterPath: String?,
 )
