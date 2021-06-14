@@ -16,9 +16,14 @@ import com.example.geekbrainsmoviesapp.model.Movie
 import com.example.geekbrainsmoviesapp.model.MoviesFilter
 import com.example.geekbrainsmoviesapp.presentation.adapter.MoviesListAdapter
 import com.example.geekbrainsmoviesapp.presentation.viewmodel.MoviesListViewModel
+import com.example.geekbrainsmoviesapp.utils.hide
+import com.example.geekbrainsmoviesapp.utils.show
+import com.example.geekbrainsmoviesapp.utils.showSnack
 
-class RatingsFragment : Fragment(), MoviesListAdapter.OnTapMovie {
-    private lateinit var viewModel: MoviesListViewModel
+class RatingsFragment : Fragment() {
+    private val viewModel: MoviesListViewModel by lazy {
+        ViewModelProvider(requireActivity()).get(MoviesListViewModel::class.java)
+    }
     private var _binding: FragmentRatingsBinding? = null
     private val binding get() = _binding!!
     private lateinit var navController: NavController
@@ -35,45 +40,50 @@ class RatingsFragment : Fragment(), MoviesListAdapter.OnTapMovie {
         super.onViewCreated(view, savedInstanceState)
 
         navController = Navigation.findNavController(view)
-        viewModel = ViewModelProvider(requireActivity()).get(MoviesListViewModel::class.java)
-        val adapter = MoviesListAdapter(this)
-        binding.listContainer.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.listContainer.adapter = adapter
+
+        val moviesListAdapter = MoviesListAdapter {
+            viewModel.setIdMovieOpen(it.id)
+            navController.navigate(R.id.nav_details_movie)
+        }
+
+        with(binding.listContainer) {
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = moviesListAdapter
+        }
 
         if (savedInstanceState == null) {
             viewModel.getMovies(MoviesFilter.Rating)
         }
 
         viewModel.getLiveDataAppState().observe(viewLifecycleOwner) {
-            when (it) {
-                is AppState.Error<List<Movie>> -> {
-                    binding.errorState.visibility = View.VISIBLE
-                    binding.loadState.visibility = View.GONE
-                    binding.successState.visibility = View.GONE
-                }
-                is AppState.Loading<List<Movie>> -> {
-                    binding.errorState.visibility = View.GONE
-                    binding.loadState.visibility = View.VISIBLE
-                    binding.successState.visibility = View.GONE
-                }
-                is AppState.Success<List<Movie>> -> {
-                    binding.errorState.visibility = View.GONE
-                    binding.loadState.visibility = View.GONE
-                    binding.successState.visibility = View.VISIBLE
-                    adapter.setData(it.data)
+            with(binding) {
+                when (it) {
+                    is AppState.Error<List<Movie>> -> {
+                        errorState.show()
+                        loadState.hide()
+                        successState.hide()
+                        errorState.showSnack(it.error.toString())
+                    }
+                    is AppState.Loading<List<Movie>> -> {
+                        errorState.hide()
+                        loadState.show()
+                        successState.hide()
+                    }
+                    is AppState.Success<List<Movie>> -> {
+                        errorState.hide()
+                        loadState.hide()
+                        successState.show()
+                        moviesListAdapter.setData(it.data)
+                    }
                 }
             }
         }
-    }
-
-    override fun openMovieCard(movie: Movie) {
-        viewModel.setMovieOpen(movie)
-        navController.navigate(R.id.nav_details_movie)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
 }
