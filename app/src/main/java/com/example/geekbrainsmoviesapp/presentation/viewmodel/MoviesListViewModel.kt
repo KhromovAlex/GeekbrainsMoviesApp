@@ -35,7 +35,7 @@ class MoviesListViewModel : ViewModel() {
                     }
 
                     override fun onFailure(call: Call<ResultListApi>, t: Throwable) {
-                        liveDataAppState.value = AppState.Error(Exception("Ошибка загрузки данных"))
+                        liveDataAppState.value = AppState.Error(Exception(t))
                     }
 
                 })
@@ -56,7 +56,7 @@ class MoviesListViewModel : ViewModel() {
                     }
 
                     override fun onFailure(call: Call<ResultListApi>, t: Throwable) {
-                        liveDataAppState.value = AppState.Error(Exception("Ошибка загрузки данных"))
+                        liveDataAppState.value = AppState.Error(Exception(t))
                     }
 
                 })
@@ -75,7 +75,7 @@ class MoviesListViewModel : ViewModel() {
             }
 
             override fun onFailure(call: Call<MovieDetails>, t: Throwable) {
-                liveDataAppState.value = AppState.Error(Exception("Ошибка загрузки данных"))
+                liveDataAppState.value = AppState.Error(Exception(t))
             }
         })
     }

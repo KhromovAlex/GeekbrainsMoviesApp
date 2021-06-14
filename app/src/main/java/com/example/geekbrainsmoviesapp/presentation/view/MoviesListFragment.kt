@@ -1,10 +1,15 @@
 package com.example.geekbrainsmoviesapp.presentation.view
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -22,7 +27,7 @@ import com.example.geekbrainsmoviesapp.utils.show
 import com.example.geekbrainsmoviesapp.utils.showSnack
 
 class MoviesListFragment : Fragment() {
-
+    private lateinit var receiverCheckConnectivity: BroadcastReceiver
     private val viewModel: MoviesListViewModel by lazy {
         ViewModelProvider(requireActivity()).get(MoviesListViewModel::class.java)
     }
@@ -40,6 +45,16 @@ class MoviesListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        receiverCheckConnectivity = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                Toast.makeText(requireContext(), "CONNECTIVITY_ACTION", Toast.LENGTH_SHORT).show()
+            }
+        }
+        requireContext().registerReceiver(
+            receiverCheckConnectivity,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        )
 
         navController = Navigation.findNavController(view)
 
@@ -86,6 +101,7 @@ class MoviesListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        requireContext().unregisterReceiver(receiverCheckConnectivity)
     }
 
 }
