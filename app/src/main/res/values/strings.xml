@@ -9,6 +9,7 @@
     <string name="rating">Rating</string>
     <string name="success">success</string>
     <string name="error">error</string>
+    <string name="error_load_data">Error load data</string>
     <string name="details_movie">Details movie</string>
     <string name="poster_movie">Poster movie</string>
     <string name="vote_average_ic">vote_average_ic</string>
@@ -16,5 +17,5 @@
     <string name="placeholder_vote_count">(%1$d)</string>
     <string name="placeholder_budget">Budget: %1$d $</string>
     <string name="placeholder_revenue">Revenue: %1$d $</string>
-    <string name="placeholder_release_date">Release date: (%1$s)</string>
+    <string name="placeholder_release_date">Release date: %1$s</string>
 </resources>

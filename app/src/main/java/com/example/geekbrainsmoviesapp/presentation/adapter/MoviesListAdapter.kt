@@ -8,7 +8,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.geekbrainsmoviesapp.R
+import com.example.geekbrainsmoviesapp.common.Common.BASE_URL_IMAGE
 import com.example.geekbrainsmoviesapp.model.Movie
 
 class MoviesListAdapter(val onTap: ((movie: Movie) -> Unit)?) :
@@ -41,13 +43,13 @@ class MoviesListAdapter(val onTap: ((movie: Movie) -> Unit)?) :
         fun bind(movie: Movie) {
             with(itemView) {
                 setOnClickListener {
-                    onTap?.invoke(list[adapterPosition])
+                    onTap?.invoke(list[absoluteAdapterPosition])
                 }
                 findViewById<TextView>(R.id.title).text = movie.title
                 findViewById<TextView>(R.id.overview).text = movie.overview
 
                 findViewById<ImageView>(R.id.image_poster).run {
-                    if (movie.posterPath == "") {
+                    if (movie.posterPath == null || movie.posterPath!!.trim() == "") {
                         setImageDrawable(
                             ContextCompat.getDrawable(
                                 context,
@@ -55,6 +57,11 @@ class MoviesListAdapter(val onTap: ((movie: Movie) -> Unit)?) :
                             )
                         )
                         setBackgroundResource(R.color.gray)
+                    } else {
+                        Glide.with(this)
+                            .load("$BASE_URL_IMAGE${movie.posterPath}")
+                            .centerCrop()
+                            .into(this)
                     }
                 }
             }
