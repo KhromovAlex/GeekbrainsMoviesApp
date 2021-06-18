@@ -1,6 +1,7 @@
 package com.example.geekbrainsmoviesapp.presentation.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.geekbrainsmoviesapp.R
 import com.example.geekbrainsmoviesapp.databinding.FragmentRatingsBinding
 import com.example.geekbrainsmoviesapp.model.AppState
-import com.example.geekbrainsmoviesapp.model.Movie
+import com.example.geekbrainsmoviesapp.model.MovieDto
 import com.example.geekbrainsmoviesapp.model.MoviesFilter
 import com.example.geekbrainsmoviesapp.presentation.adapter.MoviesListAdapter
 import com.example.geekbrainsmoviesapp.presentation.viewmodel.MoviesListViewModel
@@ -32,6 +33,9 @@ class RatingsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        if (savedInstanceState == null) {
+            viewModel.setLiveDataAppState(AppState.Loading())
+        }
         _binding = FragmentRatingsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -53,24 +57,25 @@ class RatingsFragment : Fragment() {
         }
 
         if (savedInstanceState == null) {
+            viewModel.loadMovies(MoviesFilter.Rating)
             viewModel.getMovies(MoviesFilter.Rating)
         }
 
         viewModel.getLiveDataAppState().observe(viewLifecycleOwner) {
             with(binding) {
                 when (it) {
-                    is AppState.Error<List<Movie>> -> {
+                    is AppState.Error<List<MovieDto>> -> {
                         errorState.show()
                         loadState.hide()
                         successState.hide()
                         errorState.showSnack(it.error.toString())
                     }
-                    is AppState.Loading<List<Movie>> -> {
+                    is AppState.Loading<List<MovieDto>> -> {
                         errorState.hide()
                         loadState.show()
                         successState.hide()
                     }
-                    is AppState.Success<List<Movie>> -> {
+                    is AppState.Success<List<MovieDto>> -> {
                         errorState.hide()
                         loadState.hide()
                         successState.show()
