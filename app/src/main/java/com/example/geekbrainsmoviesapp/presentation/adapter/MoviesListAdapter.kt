@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.geekbrainsmoviesapp.R
 import com.example.geekbrainsmoviesapp.common.Common.BASE_URL_IMAGE
-import com.example.geekbrainsmoviesapp.model.Movie
+import com.example.geekbrainsmoviesapp.model.MovieDto
 
-class MoviesListAdapter(val onTap: ((movie: Movie) -> Unit)?) :
+class MoviesListAdapter(val onTap: ((movieDto: MovieDto) -> Unit)?) :
     RecyclerView.Adapter<MoviesListAdapter.MoviesListViewHolder>() {
-    private val list = mutableListOf<Movie>()
+    private val list = mutableListOf<MovieDto>()
 
-    fun setData(toAdd: List<Movie>) {
+    fun setData(toAdd: List<MovieDto>) {
         val callback = MoviesListDiffUtilCallback(list, toAdd)
         DiffUtil.calculateDiff(callback).run {
             list.clear()
@@ -40,16 +40,16 @@ class MoviesListAdapter(val onTap: ((movie: Movie) -> Unit)?) :
     override fun getItemCount() = list.size
 
     inner class MoviesListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(movie: Movie) {
+        fun bind(movieDto: MovieDto) {
             with(itemView) {
                 setOnClickListener {
                     onTap?.invoke(list[absoluteAdapterPosition])
                 }
-                findViewById<TextView>(R.id.title).text = movie.title
-                findViewById<TextView>(R.id.overview).text = movie.overview
+                findViewById<TextView>(R.id.title).text = movieDto.title
+                findViewById<TextView>(R.id.overview).text = movieDto.overview
 
                 findViewById<ImageView>(R.id.image_poster).run {
-                    if (movie.posterPath == null || movie.posterPath!!.trim() == "") {
+                    if (movieDto.posterPath == null || movieDto.posterPath!!.trim() == "") {
                         setImageDrawable(
                             ContextCompat.getDrawable(
                                 context,
@@ -59,7 +59,7 @@ class MoviesListAdapter(val onTap: ((movie: Movie) -> Unit)?) :
                         setBackgroundResource(R.color.gray)
                     } else {
                         Glide.with(this)
-                            .load("$BASE_URL_IMAGE${movie.posterPath}")
+                            .load("$BASE_URL_IMAGE${movieDto.posterPath}")
                             .centerCrop()
                             .into(this)
                     }
@@ -69,8 +69,8 @@ class MoviesListAdapter(val onTap: ((movie: Movie) -> Unit)?) :
     }
 
     inner class MoviesListDiffUtilCallback(
-        private val list: List<Movie>,
-        private val toAdd: List<Movie>
+        private val list: List<MovieDto>,
+        private val toAdd: List<MovieDto>
     ) :
         DiffUtil.Callback() {
         override fun getOldListSize() = list.size

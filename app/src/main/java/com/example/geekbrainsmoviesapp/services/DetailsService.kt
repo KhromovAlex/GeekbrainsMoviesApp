@@ -12,7 +12,7 @@ import com.example.geekbrainsmoviesapp.common.Common.DETAILS_REQUEST_ID_EXTRA
 import com.example.geekbrainsmoviesapp.common.Common.DETAILS_RESULT_ERROR
 import com.example.geekbrainsmoviesapp.common.Common.DETAILS_RESULT_NULL_INTENT
 import com.example.geekbrainsmoviesapp.common.Common.DETAILS_RESULT_SUCCESS
-import com.example.geekbrainsmoviesapp.model.MovieDetails
+import com.example.geekbrainsmoviesapp.model.MovieDto
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,10 +27,10 @@ class DetailsService(name: String = "DetailService") : IntentService(name) {
             LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
         } else {
             val id = intent.getIntExtra(DETAILS_REQUEST_ID_EXTRA, 0)
-            mService.getMovie(id).enqueue(object : Callback<MovieDetails> {
+            mService.getMovie(id).enqueue(object : Callback<MovieDto> {
                 override fun onResponse(
-                    call: Call<MovieDetails>,
-                    response: Response<MovieDetails>
+                    call: Call<MovieDto>,
+                    response: Response<MovieDto>
                 ) {
                     putLoadResult(DETAILS_RESULT_SUCCESS)
                     broadcastIntent.putExtra(DETAILS_REQUEST_DATA, response.body())
@@ -38,7 +38,7 @@ class DetailsService(name: String = "DetailService") : IntentService(name) {
                         .sendBroadcast(broadcastIntent)
                 }
 
-                override fun onFailure(call: Call<MovieDetails>, t: Throwable) {
+                override fun onFailure(call: Call<MovieDto>, t: Throwable) {
                     putLoadResult(DETAILS_RESULT_ERROR)
                     LocalBroadcastManager.getInstance(this@DetailsService)
                         .sendBroadcast(broadcastIntent)

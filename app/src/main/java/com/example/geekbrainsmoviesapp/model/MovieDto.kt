@@ -6,11 +6,11 @@ import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
-data class MovieDetails(
+data class MovieDto(
     @SerializedName("id")
     var id: Int,
     @SerializedName("original_language")
-    var originalLanguage: String,
+    var originalLanguage: String? = null,
     @SerializedName("original_title")
     var originalTitle: String,
     @SerializedName("title")
@@ -20,17 +20,20 @@ data class MovieDetails(
     @SerializedName("poster_path")
     var posterPath: String?,
     @SerializedName("release_date")
-    var releaseDate: Date,
+    var releaseDate: Date? = null,
     @SerializedName("vote_average")
-    var voteAverage: Double,
+    var voteAverage: Double? = null,
     @SerializedName("vote_count")
-    var voteCount: Int,
-    @SerializedName("genres")
-    var genres: List<Genre>,
+    var voteCount: Int? = null,
     @SerializedName("budget")
-    var budget: Int,
+    var budget: Int? = null,
     @SerializedName("revenue")
-    var revenue: Int,
+    var revenue: Int? = null,
     @SerializedName("runtime")
-    var runtime: Int,
+    var runtime: Int? = null,
+    @SerializedName("adult")
+    var adult: Boolean,
+    var filter: String?,
+    var isFavorites: Boolean = false,
+    var note: String?
 ) : Parcelable

@@ -1,13 +1,13 @@
 package com.example.geekbrainsmoviesapp.presentation.view
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -21,7 +21,7 @@ import com.example.geekbrainsmoviesapp.common.Common.DETAILS_REQUEST_ID_EXTRA
 import com.example.geekbrainsmoviesapp.common.Common.DETAILS_RESULT_SUCCESS
 import com.example.geekbrainsmoviesapp.databinding.FragmentDetailsMovieBinding
 import com.example.geekbrainsmoviesapp.model.AppState
-import com.example.geekbrainsmoviesapp.model.MovieDetails
+import com.example.geekbrainsmoviesapp.model.MovieDto
 import com.example.geekbrainsmoviesapp.presentation.viewmodel.MoviesListViewModel
 import com.example.geekbrainsmoviesapp.services.DetailsService
 import com.example.geekbrainsmoviesapp.utils.hide
@@ -29,6 +29,7 @@ import com.example.geekbrainsmoviesapp.utils.show
 import com.example.geekbrainsmoviesapp.utils.showSnack
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class DetailsMovieFragment : Fragment() {
     private lateinit var receiverDetails: BroadcastReceiver
@@ -42,6 +43,9 @@ class DetailsMovieFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        if (savedInstanceState == null) {
+            viewModel.setLiveDataCurrentMovie(AppState.Loading())
+        }
         _binding = FragmentDetailsMovieBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -54,11 +58,20 @@ class DetailsMovieFragment : Fragment() {
                 intent?.getStringExtra(DETAILS_LOAD_RESULT_EXTRA)?.let {
                     when (it) {
                         DETAILS_RESULT_SUCCESS -> {
-                            val data = intent.getParcelableExtra<MovieDetails>(DETAILS_REQUEST_DATA)
+                            val data =
+                                intent.getParcelableExtra<MovieDto>(DETAILS_REQUEST_DATA)
                             if (data == null) {
-                                viewModel.setLiveDataCurrentMovie(AppState.Error(Exception(getString(R.string.error_load_data))))
+                                viewModel.setLiveDataCurrentMovie(
+                                    AppState.Error(
+                                        Exception(
+                                            getString(
+                                                R.string.error_load_data
+                                            )
+                                        )
+                                    )
+                                )
                             } else {
-                                viewModel.setLiveDataCurrentMovie(AppState.Success(data))
+                                viewModel.updateMovie(data)
                             }
 
                         }
@@ -75,18 +88,26 @@ class DetailsMovieFragment : Fragment() {
         )
 
         binding.movieButtonToFavorites.setOnClickListener {
-            if (viewModel.getLiveDataCurrentMovie().value is AppState.Success<MovieDetails>) {
-                viewModel.addInFavorites((viewModel.getLiveDataCurrentMovie().value as AppState.Success<MovieDetails>).data)
-
-                if (viewModel.isFavoritesMovie((viewModel.getLiveDataCurrentMovie().value as AppState.Success<MovieDetails>).data)) {
+            if (viewModel.getLiveDataCurrentMovie().value is AppState.Success<MovieDto>) {
+                val currentMovie = (viewModel.getLiveDataCurrentMovie().value as AppState.Success<MovieDto>).data
+                if (!currentMovie.isFavorites) {
                     binding.movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+                    viewModel.toggleFavorites(currentMovie.apply { isFavorites = true })
                 } else {
                     binding.movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
+                    viewModel.toggleFavorites(currentMovie.apply { isFavorites = false })
                 }
+
             }
         }
 
-        viewModel.setLiveDataCurrentMovie(AppState.Loading())
+        binding.movieNoteButton.setOnClickListener {
+            if (viewModel.getLiveDataCurrentMovie().value is AppState.Success<MovieDto>) {
+                hideKeyboardFrom(requireContext(), binding.movieNoteText)
+                val currentMovie = (viewModel.getLiveDataCurrentMovie().value as AppState.Success<MovieDto>).data
+                viewModel.updateMovie(currentMovie.apply { note = binding.movieNoteText.text.toString().trim() ?: "" })
+            }
+        }
 
         viewModel.getLiveDataCurrentIdMovie().observe(viewLifecycleOwner) {
             if (savedInstanceState == null) {
@@ -103,29 +124,32 @@ class DetailsMovieFragment : Fragment() {
         viewModel.getLiveDataCurrentMovie().observe(viewLifecycleOwner) {
             with(binding) {
                 when (it) {
-                    is AppState.Error<MovieDetails> -> {
+                    is AppState.Error<MovieDto> -> {
                         errorState.show()
                         loadState.hide()
                         successState.hide()
                         errorState.showSnack(R.string.error)
                     }
-                    is AppState.Loading<MovieDetails> -> {
+                    is AppState.Loading<MovieDto> -> {
                         errorState.hide()
                         loadState.show()
                         successState.hide()
                     }
-                    is AppState.Success<MovieDetails> -> {
-                        if (viewModel.isFavoritesMovie(it.data)) {
+                    is AppState.Success<MovieDto> -> {
+                        if (it.data.isFavorites) {
                             movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
                         } else {
                             movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
                         }
 
+                        movieNoteText.setText(it.data.note ?: "")
                         movieTitle.text = it.data.title
                         movieTitleOriginal.text = it.data.originalTitle
                         movieDescription.text = it.data.overview
-                        movieGenres.text =
-                            it.data.genres.foldIndexed("") { index, acc, genre -> if (index == it.data.genres.size - 1) "$acc${genre.name}" else "$acc${genre.name}, " }
+                        movieAdult.text = if (it.data.adult) getString(
+                            R.string.placeholder_adult,
+                            getString(R.string.yes)
+                        ) else getString(R.string.placeholder_adult, getString(R.string.no))
                         movieRuntime.text =
                             getString(R.string.placeholder_time_min, it.data.runtime)
                         movieVoteAverage.text = it.data.voteAverage.toString()
@@ -133,10 +157,13 @@ class DetailsMovieFragment : Fragment() {
                             getString(R.string.placeholder_vote_count, it.data.voteCount)
                         movieBudget.text = getString(R.string.placeholder_budget, it.data.budget)
                         movieRevenue.text = getString(R.string.placeholder_revenue, it.data.revenue)
-                        movieReleaseDate.text =
+                        movieReleaseDate.text = if (it.data.releaseDate == null) "" else
                             getString(
                                 R.string.placeholder_release_date,
-                                SimpleDateFormat("dd.MM.yyyy", Locale("en")).format(it.data.releaseDate)
+                                SimpleDateFormat(
+                                    "dd.MM.yyyy",
+                                    Locale("en")
+                                ).format(it.data.releaseDate!!)
                             )
 
                         if (it.data.posterPath == null || it.data.posterPath!!.trim() == "") {
@@ -163,6 +190,13 @@ class DetailsMovieFragment : Fragment() {
             }
 
         }
+    }
+
+    fun hideKeyboardFrom(context: Context, view: View) {
+        val imm: InputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        view.clearFocus()
     }
 
     override fun onDestroyView() {
