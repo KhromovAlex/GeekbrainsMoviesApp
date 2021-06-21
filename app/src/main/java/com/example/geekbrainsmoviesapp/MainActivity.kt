@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         mAppBarConfiguration = AppBarConfiguration.Builder(
-            R.id.nav_home, R.id.nav_favorites, R.id.nav_ratings
+            R.id.nav_home, R.id.nav_favorites, R.id.nav_ratings, R.id.nav_contacts
         ).build()
 
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration)
@@ -41,6 +41,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.action_rating -> {
                     navController.navigate(R.id.nav_ratings)
+                    true
+                }
+                R.id.action_contacts -> {
+                    navController.navigate(R.id.nav_contacts)
                     true
                 }
                 else -> false

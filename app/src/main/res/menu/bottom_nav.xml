@@ -16,4 +16,10 @@
         android:icon="@drawable/ic_baseline_star_rate_24"
         android:title="@string/rating"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_contacts"
+        android:icon="@drawable/ic_baseline_people_alt_24"
+        android:title="@string/contacts"
+        app:showAsAction="ifRoom" />
 </menu>
