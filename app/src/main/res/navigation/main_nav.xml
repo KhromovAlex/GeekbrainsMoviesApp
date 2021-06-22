@@ -36,10 +36,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_contacts"
-        android:name="com.example.geekbrainsmoviesapp.presentation.view.ContactFragment"
-        android:label="@string/contacts"
-        tools:layout="@layout/fragment_item_list">
+        android:id="@+id/nav_maps"
+        android:name="com.example.geekbrainsmoviesapp.presentation.view.MapsFragment"
+        android:label="@string/maps"
+        tools:layout="@layout/fragment_maps">
         <argument
             android:name="ShowBottomNav"
             android:defaultValue="true" />

@@ -18,8 +18,8 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_contacts"
-        android:icon="@drawable/ic_baseline_people_alt_24"
-        android:title="@string/contacts"
+        android:id="@+id/action_maps"
+        android:icon="@drawable/ic_baseline_map_24"
+        android:title="@string/maps"
         app:showAsAction="ifRoom" />
 </menu>
