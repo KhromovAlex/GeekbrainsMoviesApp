@@ -124,7 +124,10 @@ class ContactFragment : Fragment() {
                         var phone = ""
                         phones?.let {
                             while (phones.moveToNext()) {
-                                phone = if (phone == "") phones.getString(phones.getColumnIndex(Phone.NUMBER)) else "$phone, ${phones.getString(phones.getColumnIndex(Phone.NUMBER))}"
+                                phone =
+                                    if (phone == "") phones.getString(phones.getColumnIndex(Phone.NUMBER)) else "$phone, ${
+                                        phones.getString(phones.getColumnIndex(Phone.NUMBER))
+                                    }"
                             }
                         }
 

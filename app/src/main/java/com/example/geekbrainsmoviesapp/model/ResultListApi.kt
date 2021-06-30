@@ -1,5 +1,5 @@
 package com.example.geekbrainsmoviesapp.model
 
-data class ResultListApi (
+data class ResultListApi(
     var results: MutableList<MovieDto>?
 )

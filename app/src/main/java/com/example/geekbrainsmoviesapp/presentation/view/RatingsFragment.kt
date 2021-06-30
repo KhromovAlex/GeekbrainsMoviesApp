@@ -45,22 +45,14 @@ class RatingsFragment : Fragment() {
 
         navController = Navigation.findNavController(view)
 
-        val moviesListAdapter = MoviesListAdapter {
-            viewModel.setIdMovieOpen(it.id)
-            navController.navigate(R.id.nav_details_movie)
-        }
+        val moviesListAdapter = moviesListAdapter()
 
-        with(binding.listContainer) {
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = moviesListAdapter
-        }
+        firstLaunch(savedInstanceState)
 
-        if (savedInstanceState == null) {
-            viewModel.loadMovies(MoviesFilter.Rating)
-            viewModel.getMovies(MoviesFilter.Rating)
-        }
+        watchAppState(moviesListAdapter)
+    }
 
+    private fun watchAppState(moviesListAdapter: MoviesListAdapter) {
         viewModel.getLiveDataAppState().observe(viewLifecycleOwner) {
             with(binding) {
                 when (it) {
@@ -84,6 +76,27 @@ class RatingsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun firstLaunch(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
+            viewModel.loadMovies(MoviesFilter.Rating)
+            viewModel.getMovies(MoviesFilter.Rating)
+        }
+    }
+
+    private fun moviesListAdapter(): MoviesListAdapter {
+        val moviesListAdapter = MoviesListAdapter {
+            viewModel.setIdMovieOpen(it.id)
+            navController.navigate(R.id.nav_details_movie)
+        }
+
+        with(binding.listContainer) {
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = moviesListAdapter
+        }
+        return moviesListAdapter
     }
 
     override fun onDestroyView() {

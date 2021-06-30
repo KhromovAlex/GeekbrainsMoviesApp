@@ -28,7 +28,6 @@ class App : Application() {
                             LocalDatabase::class.java,
                             DB_NAME
                         )
-//                            .allowMainThreadQueries()
                             .build()
                     }
                 }

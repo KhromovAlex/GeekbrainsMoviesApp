@@ -30,4 +30,5 @@
     <string name="maps">Maps</string>
     <string name="button_search_map">Search</string>
     <string name="marker_start">marker start</string>
+    <string name="free_version">Free version</string>
 </resources>

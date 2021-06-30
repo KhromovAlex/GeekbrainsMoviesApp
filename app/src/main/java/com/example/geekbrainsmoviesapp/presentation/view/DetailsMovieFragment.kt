@@ -53,6 +53,108 @@ class DetailsMovieFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setBroadcastDetails()
+
+        setOnTapFavoriteButton()
+
+        setOnTapNoteButton()
+
+        watchIdMovies(savedInstanceState)
+
+        watchAppState()
+    }
+
+    private fun watchAppState() {
+        viewModel.getLiveDataCurrentMovie().observe(viewLifecycleOwner) {
+            with(binding) {
+                when (it) {
+                    is AppState.Error<MovieDto> -> {
+                        errorState.show()
+                        loadState.hide()
+                        successState.hide()
+                        errorState.showSnack(R.string.error)
+                    }
+                    is AppState.Loading<MovieDto> -> {
+                        errorState.hide()
+                        loadState.show()
+                        successState.hide()
+                    }
+                    is AppState.Success<MovieDto> -> {
+                        renderUi(it)
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    private fun FragmentDetailsMovieBinding.renderUi(appState: AppState.Success<MovieDto>) {
+        if (appState.data.isFavorites) {
+            movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+        } else {
+            movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
+        }
+
+        movieNoteText.setText(appState.data.note ?: "")
+        movieTitle.text = appState.data.title
+        movieTitleOriginal.text = appState.data.originalTitle
+        movieDescription.text = appState.data.overview
+        movieAdult.text = if (appState.data.adult) getString(
+            R.string.placeholder_adult,
+            getString(R.string.yes)
+        ) else getString(R.string.placeholder_adult, getString(R.string.no))
+        movieRuntime.text =
+            getString(R.string.placeholder_time_min, appState.data.runtime)
+        movieVoteAverage.text = appState.data.voteAverage.toString()
+        movieVoteCount.text =
+            getString(R.string.placeholder_vote_count, appState.data.voteCount)
+        movieBudget.text = getString(R.string.placeholder_budget, appState.data.budget)
+        movieRevenue.text = getString(R.string.placeholder_revenue, appState.data.revenue)
+        movieReleaseDate.text = if (appState.data.releaseDate == null) "" else
+            getString(
+                R.string.placeholder_release_date,
+                SimpleDateFormat(
+                    "dd.MM.yyyy",
+                    Locale("en")
+                ).format(appState.data.releaseDate!!)
+            )
+
+        if (appState.data.posterPath == null || appState.data.posterPath!!.trim() == "") {
+            movieImagePoster.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_baseline_close_24
+                )
+            )
+            movieImagePoster.setBackgroundResource(R.color.gray)
+        } else {
+            Glide.with(movieImagePoster)
+                .load("${Common.BASE_URL_IMAGE}${appState.data.posterPath}")
+                .centerCrop()
+                .into(movieImagePoster)
+        }
+
+        errorState.hide()
+        loadState.hide()
+        successState.show()
+    }
+
+    private fun watchIdMovies(savedInstanceState: Bundle?) {
+        viewModel.getLiveDataCurrentIdMovie().observe(viewLifecycleOwner) {
+            if (savedInstanceState == null) {
+                requireContext()
+                    .startService(Intent(requireContext(), DetailsService::class.java).apply {
+                        putExtra(
+                            DETAILS_REQUEST_ID_EXTRA,
+                            it
+                        )
+                    })
+            }
+        }
+    }
+
+    private fun setBroadcastDetails() {
         receiverDetails = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 intent?.getStringExtra(DETAILS_LOAD_RESULT_EXTRA)?.let {
@@ -86,10 +188,13 @@ class DetailsMovieFragment : Fragment() {
             receiverDetails,
             IntentFilter(Common.DETAILS_INTENT_FILTER)
         )
+    }
 
+    private fun setOnTapFavoriteButton() {
         binding.movieButtonToFavorites.setOnClickListener {
             if (viewModel.getLiveDataCurrentMovie().value is AppState.Success<MovieDto>) {
-                val currentMovie = (viewModel.getLiveDataCurrentMovie().value as AppState.Success<MovieDto>).data
+                val currentMovie =
+                    (viewModel.getLiveDataCurrentMovie().value as AppState.Success<MovieDto>).data
                 if (!currentMovie.isFavorites) {
                     binding.movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
                     viewModel.toggleFavorites(currentMovie.apply { isFavorites = true })
@@ -100,99 +205,22 @@ class DetailsMovieFragment : Fragment() {
 
             }
         }
+    }
 
+    private fun setOnTapNoteButton() {
         binding.movieNoteButton.setOnClickListener {
             if (viewModel.getLiveDataCurrentMovie().value is AppState.Success<MovieDto>) {
                 hideKeyboardFrom(requireContext(), binding.movieNoteText)
-                val currentMovie = (viewModel.getLiveDataCurrentMovie().value as AppState.Success<MovieDto>).data
-                viewModel.updateMovie(currentMovie.apply { note = binding.movieNoteText.text.toString().trim() ?: "" })
+                val currentMovie =
+                    (viewModel.getLiveDataCurrentMovie().value as AppState.Success<MovieDto>).data
+                viewModel.updateMovie(currentMovie.apply {
+                    note = binding.movieNoteText.text.toString().trim()
+                })
             }
-        }
-
-        viewModel.getLiveDataCurrentIdMovie().observe(viewLifecycleOwner) {
-            if (savedInstanceState == null) {
-                requireContext()
-                    .startService(Intent(requireContext(), DetailsService::class.java).apply {
-                        putExtra(
-                            DETAILS_REQUEST_ID_EXTRA,
-                            it
-                        )
-                    })
-            }
-        }
-
-        viewModel.getLiveDataCurrentMovie().observe(viewLifecycleOwner) {
-            with(binding) {
-                when (it) {
-                    is AppState.Error<MovieDto> -> {
-                        errorState.show()
-                        loadState.hide()
-                        successState.hide()
-                        errorState.showSnack(R.string.error)
-                    }
-                    is AppState.Loading<MovieDto> -> {
-                        errorState.hide()
-                        loadState.show()
-                        successState.hide()
-                    }
-                    is AppState.Success<MovieDto> -> {
-                        if (it.data.isFavorites) {
-                            movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
-                        } else {
-                            movieButtonToFavorites.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
-                        }
-
-                        movieNoteText.setText(it.data.note ?: "")
-                        movieTitle.text = it.data.title
-                        movieTitleOriginal.text = it.data.originalTitle
-                        movieDescription.text = it.data.overview
-                        movieAdult.text = if (it.data.adult) getString(
-                            R.string.placeholder_adult,
-                            getString(R.string.yes)
-                        ) else getString(R.string.placeholder_adult, getString(R.string.no))
-                        movieRuntime.text =
-                            getString(R.string.placeholder_time_min, it.data.runtime)
-                        movieVoteAverage.text = it.data.voteAverage.toString()
-                        movieVoteCount.text =
-                            getString(R.string.placeholder_vote_count, it.data.voteCount)
-                        movieBudget.text = getString(R.string.placeholder_budget, it.data.budget)
-                        movieRevenue.text = getString(R.string.placeholder_revenue, it.data.revenue)
-                        movieReleaseDate.text = if (it.data.releaseDate == null) "" else
-                            getString(
-                                R.string.placeholder_release_date,
-                                SimpleDateFormat(
-                                    "dd.MM.yyyy",
-                                    Locale("en")
-                                ).format(it.data.releaseDate!!)
-                            )
-
-                        if (it.data.posterPath == null || it.data.posterPath!!.trim() == "") {
-                            movieImagePoster.setImageDrawable(
-                                ContextCompat.getDrawable(
-                                    requireContext(),
-                                    R.drawable.ic_baseline_close_24
-                                )
-                            )
-                            movieImagePoster.setBackgroundResource(R.color.gray)
-                        } else {
-                            Glide.with(movieImagePoster)
-                                .load("${Common.BASE_URL_IMAGE}${it.data.posterPath}")
-                                .centerCrop()
-                                .into(movieImagePoster)
-                        }
-
-                        errorState.hide()
-                        loadState.hide()
-                        successState.show()
-                    }
-                }
-
-            }
-
         }
     }
 
-    fun hideKeyboardFrom(context: Context, view: View) {
+    private fun hideKeyboardFrom(context: Context, view: View) {
         val imm: InputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
