@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "446097023847",
+    "project_id": "geekbrainsmovies",
+    "storage_bucket": "geekbrainsmovies.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446097023847:android:671af42f93aa897fc605c2",
+        "android_client_info": {
+          "package_name": "com.example.geekbrainsmoviesapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "446097023847-aq2uqjs5oq15sodlufnbc14q8crticml.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNxG1JB1qaSLeQzlfzW42rzWFDwdv8QFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "446097023847-aq2uqjs5oq15sodlufnbc14q8crticml.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
