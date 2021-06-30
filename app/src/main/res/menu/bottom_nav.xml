@@ -16,4 +16,10 @@
         android:icon="@drawable/ic_baseline_star_rate_24"
         android:title="@string/rating"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_maps"
+        android:icon="@drawable/ic_baseline_map_24"
+        android:title="@string/maps"
+        app:showAsAction="ifRoom" />
 </menu>

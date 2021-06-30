@@ -3,4 +3,5 @@
     <dimen name="marginHorizontalMovieItem">16dp</dimen>
     <dimen name="marginVerticalMovieItem">4dp</dimen>
     <dimen name="paddingMovieItem">16dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>
