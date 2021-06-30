@@ -1,6 +1,5 @@
 package com.example.geekbrainsmoviesapp.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -186,18 +185,6 @@ class MoviesListViewModel : ViewModel() {
 
     fun setIdMovieOpen(id: Int) {
         liveDataCurrentIdMovie.value = id
-    }
-
-    fun getMovieDetails(id: Int) {
-        moviesRepository.getMovieDetail(id).enqueue(object : Callback<MovieDto> {
-            override fun onResponse(call: Call<MovieDto>, response: Response<MovieDto>) {
-                liveDataCurrentMovieDto.value = AppState.Success(response.body() as MovieDto)
-            }
-
-            override fun onFailure(call: Call<MovieDto>, t: Throwable) {
-                liveDataAppState.value = AppState.Error(Exception(t))
-            }
-        })
     }
 
     fun setLiveDataCurrentMovie(data: AppState<MovieDto>) {

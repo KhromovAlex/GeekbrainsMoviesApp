@@ -2,7 +2,6 @@ package com.example.geekbrainsmoviesapp.presentation.view
 
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import androidx.fragment.app.Fragment
@@ -60,22 +59,14 @@ class MoviesListFragment : Fragment() {
 
         navController = Navigation.findNavController(view)
 
-        val moviesListAdapter = MoviesListAdapter {
-            viewModel.setIdMovieOpen(it.id)
-            navController.navigate(R.id.nav_details_movie)
-        }
+        val moviesListAdapter = moviesListAdapter()
 
-        with(binding.listContainer) {
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = moviesListAdapter
-        }
+        firstLaunch(savedInstanceState)
 
-        if (savedInstanceState == null) {
-            viewModel.loadMovies(if (isShowAdult()) MoviesFilter.All else MoviesFilter.SkipAdult)
-            viewModel.getMovies(if (isShowAdult()) MoviesFilter.All else MoviesFilter.SkipAdult)
-        }
+        watchAppState(moviesListAdapter)
+    }
 
+    private fun watchAppState(moviesListAdapter: MoviesListAdapter) {
         viewModel.getLiveDataAppState().observe(viewLifecycleOwner) {
             with(binding) {
                 when (it) {
@@ -99,6 +90,27 @@ class MoviesListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun firstLaunch(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
+            viewModel.loadMovies(if (isShowAdult()) MoviesFilter.All else MoviesFilter.SkipAdult)
+            viewModel.getMovies(if (isShowAdult()) MoviesFilter.All else MoviesFilter.SkipAdult)
+        }
+    }
+
+    private fun moviesListAdapter(): MoviesListAdapter {
+        val moviesListAdapter = MoviesListAdapter {
+            viewModel.setIdMovieOpen(it.id)
+            navController.navigate(R.id.nav_details_movie)
+        }
+
+        with(binding.listContainer) {
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = moviesListAdapter
+        }
+        return moviesListAdapter
     }
 
     override fun onDestroyView() {

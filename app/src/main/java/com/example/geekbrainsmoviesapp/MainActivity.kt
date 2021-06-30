@@ -2,7 +2,6 @@ package com.example.geekbrainsmoviesapp
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
@@ -23,18 +22,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
         setSupportActionBar(binding.toolbar)
 
+        printFcmToken()
+
+        setNav()
+    }
+
+    private fun printFcmToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w("MainActivity", "Fetching FCM registration token failed", task.exception)
                 return@OnCompleteListener
             }
             val token = task.result
-            Log.d("MainActivity", token ?: "")
+            Log.d(TAG, token ?: "")
         })
+    }
 
+    override fun onSupportNavigateUp(): Boolean {
+        return (NavigationUI.navigateUp(navController, mAppBarConfiguration)
+                || super.onSupportNavigateUp())
+    }
+
+    private fun setNav() {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         mAppBarConfiguration = AppBarConfiguration.Builder(
             R.id.nav_home, R.id.nav_favorites, R.id.nav_ratings, R.id.nav_maps
@@ -69,8 +80,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return (NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp())
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }

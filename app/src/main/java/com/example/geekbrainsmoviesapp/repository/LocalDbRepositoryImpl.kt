@@ -16,8 +16,8 @@ class LocalDbRepositoryImpl(private val localDb: MovieDao) : LocalDbRepository {
         return localDb.getAllMovies().map {
             it
                 .map { movieEntity ->
-                movieDtoFromMovieEntity(movieEntity)
-            }
+                    movieDtoFromMovieEntity(movieEntity)
+                }
         }
     }
 
@@ -25,8 +25,8 @@ class LocalDbRepositoryImpl(private val localDb: MovieDao) : LocalDbRepository {
         return localDb.getAllMoviesSkipAdult().map { list ->
             list
                 .map { movieEntity ->
-                movieDtoFromMovieEntity(movieEntity)
-            }
+                    movieDtoFromMovieEntity(movieEntity)
+                }
         }
     }
 
