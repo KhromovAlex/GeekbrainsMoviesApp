@@ -27,4 +27,7 @@
     <string name="empty_phone">Empty phone</string>
     <string name="close">Close</string>
     <string name="no_permission_contacts">No permission to show your contacts</string>
+    <string name="maps">Maps</string>
+    <string name="button_search_map">Search</string>
+    <string name="marker_start">marker start</string>
 </resources>
